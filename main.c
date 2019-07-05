@@ -6,7 +6,7 @@
 
 void main (void){
 	
-	P0=0XFE;	//bus ops
+	P0=0XFE;	//bus ops when it is C51
 	
 	LED=0;	//bit ops
 }
@@ -25,8 +25,8 @@ void temp_delay(void);
 
 void temp_delay(void){
 
-    int i=0xfffff;
-    for(;i!=0;i--){
+    int i=0xffff;
+    for(;i>=0;i--){
         ;
     }
 }
@@ -37,9 +37,7 @@ int main	(void){
     RCC_APB2ENR |=  1<<0;	//使能AFIO
     RCC_APB2ENR |=  1<<6;  ////使能PORTE时钟	 
     RCC_APB2ENR |=  1<<3;  //使能PORTB时钟
-    
-    
-    
+    AFIO->MAPR |= 0x02000000; 
     
   /*初始化GPIOE的输出寄存器.中文参考手册8.2.4 端口输出数据寄存器(GPIOx_ODR) (x=A..E)
   * ODR32位中31~16为保留，始终读为0。0~16是我们使用的部分
@@ -57,26 +55,23 @@ int main	(void){
   *  低16位crl配置前八个ODR。高16位同理。
   *  所以总共32位只能配置16个ODR，另外16个ODR理所应当保留了下来
   */
-    GPIOB_CRL &=    0xFFFF0000;
-    GPIOB_CRL |=    0x00003333;///配置复用管理的端口B,PortB 0-3,P3决定是数码管亮orLED亮，P0-2是数码管的段选
-  	GPIOB_ODR |=    0x000000FF; //PortB低0到15输出高电平
+    GPIOB_CRL &=    0x0;
+    GPIOB_CRL |=    0x00003000;///配置复用管理的端口B,PortB3,P3决定是数码管亮orLED亮，P0-2是数码管的段选
+  	GPIOB_ODR |=    0x00000008; //PortB3 第三位输出高电平
   
-    GPIOE_CRH &=    0X00000000;
-    GPIOE_CRH |=    0x33333333;//PortE推挽输出所有位+MAX50MHZ
-  
+    GPIOE_CRH &=    0x0;
+    GPIOE_CRH |=    0x44444444;//PortE推挽输出所有高位+MAX50MHZ
   
   /*配置LED灯引脚电平高低
   * bin01010101=0x99
   * 10101010
   */
- 
+
   while(1){
   //主程序 
-  GPIOE_ODR &= ~(0xff<<8);//清除LED灯、即
-  GPIOE_ODR |= 0x99<<8;
-  temp_delay();
-  GPIOE_ODR &= (0x1<<3);
-  GPIOE_ODR |= 0x99<<9;
+    GPIOE_ODR = 0xff00;
+    temp_delay();
+    GPIOE_ODR = 0x00ff;
   
   }
 }

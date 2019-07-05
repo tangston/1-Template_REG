@@ -1,4 +1,4 @@
-
+/*本节课属于带大家自己写头文件库，明白stm32f10x.h到底有什么，是干什么的*/
 /*本文件用于添加寄存器地址及结构体定义*/
 
 /*以下还属于内核级别的私有编程，所有的地址都是同ARM在cortex-M3手册里划分规定死的*/
@@ -8,7 +8,7 @@
 *   置 STM32 才能达到稳定运行的状态。
 *   STM32 上电后，会执行 SystemInit 函数来配置 STM32 的时钟
 */
-
+#define uint32_t unsigned long int  
 
 /*  从 AHB 总线延伸出来的两条 APB2 和 APB1 总线，上面挂载着 STM32 各种各样的
 *   特色外设。我们经常说的 GPIO、串口、I2C、SPI 这些外设就挂载在这两条总线上
@@ -18,7 +18,6 @@
 */
 
 
-/**/
 
 /*片上的外围设备的基地址，即APB1总线外设地址-------------------------*/
 #define APB1_base ((unsigned int) 0x40000000)//查找意法半导体公司给的官方STM32F10x参考手册中的存储器映像_嵌入式SRAM部分表格可知地址在哪
@@ -124,6 +123,18 @@
 
 /*RCC的AHB1时钟使能enable寄存器地址....强制转换成指针*/
 #define RCC_APB2ENR		 *(unsigned int*)(RCC_BASE+0x18)
+
+
+
+typedef struct
+{
+  uint32_t EVCR;
+  uint32_t MAPR;
+  uint32_t EXTICR[4];
+} AFIO_TypeDef;
+
+
+#define AFIO                ((AFIO_TypeDef *) AFIO_BASE)
 
 /*复用功能口*/
 #define AFIO_BASE             (APB2_base + 0x0000)
